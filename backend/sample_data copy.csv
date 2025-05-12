@@ -1,0 +1,21 @@
+id,name,age,salary,department,join_date,performance_score,email
+1,John Smith,32,75000,Engineering,2018-05-12,85,john.smith@example.com
+2,Emily Johnson,28,65000,Marketing,04/15/2019,92,emily.johnson@example.com
+3,Michael Brown,45,110000,Executive,2015-10-30,88,michael.brown@example.com
+4,Sarah Davis,,82000,Sales,2017-08-22,79,sarah.davis@example.com
+5,Robert Wilson,37,90000,Engineering,09/03/2016,91,robert.wilson@example.com
+6,Jennifer Lee,31,72000,Marketing,2018-11-15,,jennifer.lee@example.com
+7,David Miller,42,95000,Sales,2014-07-08,83,david.miller@example.com
+8,Lisa Garcia,29,68000,Engineering,05/20/2020,90,lisa.garcia@example.com
+9,James Taylor,38,88000,Executive,2016-02-14,95,james.taylor@example.com
+10,Patricia Martinez,33,78000,Marketing,2017-12-05,87,patricia.martinez@example.com
+11,John Smith,32,75000,Engineering,2018-05-12,85,john.smith@example.com
+12,Steven White,36,89000,Sales,06/11/2015,82,steven.white@example.com
+13,Nancy Anderson,27,64000,Marketing,2019-09-18,88,nancy.anderson@example.com
+14,Thomas Jackson,41,98000,Engineering,2015-03-25,93,thomas.jackson@example.com
+15,Karen Martin,34,76000,Sales,07/30/2017,85,karen.martin@example.com
+16,Daniel Thompson,39,120000,Executive,2014-11-02,97,daniel.thompson@example.com
+17,Sandra Rodriguez,30,,Marketing,2018-06-19,89,sandra.rodriguez@example.com
+18,Christopher Lewis,44,105000,Engineering,08/14/2016,84,christopher.lewis@example.com
+19,Betty Walker,26,62000,Sales,2020-01-27,80,betty.walker@example.com
+20,Richard Hall,40,94000,Marketing,2015-08-09,92,richard.hall@example.com 
