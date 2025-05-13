@@ -240,8 +240,8 @@ def suggest_fixes(df, issues):
             if info['format_type'] == 'date':
                 fixes['inconsistent_formats'][col] = {
                     'options': [
-                        {'method': 'standardize_date', 'format': '%Y-%m-%d', 'description': 'Standardize to YYYY-MM-DD format'},
-                        {'method': 'standardize_date', 'format': '%m/%d/%Y', 'description': 'Standardize to MM/DD/YYYY format'},
+                        {'method': 'standardize_date_yyyy_mm_dd', 'format': '%Y-%m-%d', 'description': 'Standardize to YYYY-MM-DD format'},
+                        {'method': 'standardize_date_mm_dd_yyyy', 'format': '%m/%d/%Y', 'description': 'Standardize to MM/DD/YYYY format'},
                         {'method': 'none', 'description': 'Keep as is (no action)'}
                     ]
                 }
@@ -425,23 +425,63 @@ def apply_fixes(df, fixes):
             if selected_fix:
                 method = selected_fix.get('method')
                 
-                if method == 'standardize_date':
+                if method == 'standardize_date_yyyy_mm_dd':
                     output_format = selected_fix.get('format')
                     
                     try:
-                        # Try different input formats
-                        for input_format in ['%Y-%m-%d', '%m/%d/%Y', '%d-%m-%Y']:
-                            mask = df_copy[col].str.match(r'\d{4}-\d{2}-\d{2}|\d{2}/\d{2}/\d{4}|\d{2}-\d{2}-\d{4}')
-                            df_copy.loc[mask, col] = pd.to_datetime(
-                                df_copy.loc[mask, col], 
-                                errors='coerce',
-                                format=input_format
-                            ).dt.strftime(output_format)
+                        # Make a copy of the current column state to parse from
+                        source_column_for_parsing = df_copy[col].copy()
+
+                        # This Series will store the datetime objects after successful parsing by any format.
+                        parsed_datetime_objects = pd.Series([pd.NaT] * len(df_copy), index=df_copy.index, dtype='datetime64[ns]')
+                        
+                        input_formats_to_try = ['%Y-%m-%d', '%m/%d/%Y', '%d-%m-%Y'] 
+
+                        for fmt in input_formats_to_try:
+                            current_format_parse_results = pd.to_datetime(source_column_for_parsing, format=fmt, errors='coerce')
+                            newly_parsed_mask = current_format_parse_results.notna() & parsed_datetime_objects.isna()
+                            parsed_datetime_objects.loc[newly_parsed_mask] = current_format_parse_results[newly_parsed_mask]
+
+                        successfully_converted_mask = parsed_datetime_objects.notna()
+                        
+                        if successfully_converted_mask.any():
+                             df_copy.loc[successfully_converted_mask, col] = parsed_datetime_objects[successfully_converted_mask].dt.strftime(output_format)
                         
                         applied_fixes.append({
                             'column': col,
                             'issue_type': 'inconsistent_formats',
-                            'fix_method': 'standardize_date',
+                            'fix_method': 'standardize_date_yyyy_mm_dd',
+                            'format': output_format
+                        })
+                    except Exception as e:
+                        # Skip if format standardization fails
+                        pass
+                elif method == 'standardize_date_mm_dd_yyyy':
+                    output_format = selected_fix.get('format')
+                    
+                    try:
+                        # Make a copy of the current column state to parse from
+                        source_column_for_parsing = df_copy[col].copy()
+
+                        # This Series will store the datetime objects after successful parsing by any format.
+                        parsed_datetime_objects = pd.Series([pd.NaT] * len(df_copy), index=df_copy.index, dtype='datetime64[ns]')
+                        
+                        input_formats_to_try = ['%Y-%m-%d', '%m/%d/%Y', '%d-%m-%Y']
+
+                        for fmt in input_formats_to_try:
+                            current_format_parse_results = pd.to_datetime(source_column_for_parsing, format=fmt, errors='coerce')
+                            newly_parsed_mask = current_format_parse_results.notna() & parsed_datetime_objects.isna()
+                            parsed_datetime_objects.loc[newly_parsed_mask] = current_format_parse_results[newly_parsed_mask]
+                        
+                        successfully_converted_mask = parsed_datetime_objects.notna()
+
+                        if successfully_converted_mask.any():
+                            df_copy.loc[successfully_converted_mask, col] = parsed_datetime_objects[successfully_converted_mask].dt.strftime(output_format)
+                        
+                        applied_fixes.append({
+                            'column': col,
+                            'issue_type': 'inconsistent_formats',
+                            'fix_method': 'standardize_date_mm_dd_yyyy',
                             'format': output_format
                         })
                     except Exception as e:

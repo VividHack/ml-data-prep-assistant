@@ -20,6 +20,11 @@ wheels/
 .installed.cfg
 *.egg
 
+# Frontend
+frontend/node_modules/
+frontend/build/
+frontend/package-lock.json
+
 # Virtual Environment
 venv/
 env/
@@ -52,3 +57,6 @@ htmlcov/
 .env.development.local
 .env.test.local
 .env.production.local 
+
+# notes
+x-notes/
